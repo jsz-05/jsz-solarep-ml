@@ -1,41 +1,95 @@
-# Solar Energetic Particles:
 
-### 1. Dataset:
-High Priority elements:
-- Fe (Iron): Iron is a key element in SEP due to wide range of charge states, and a high Q(Fe) correlation with the Fe/O ratio is significant.
-- O (Oxygen): Oxygen is another abundant element and serves as a good reference point when analyzing charge state ratios (like Fe/O).
-- Si (Silicon): Silicon, while less abundant than Fe or O, also exhibits a range of charge states
+# Solar Energetic Particles (SEP) Analysis
 
-6 Elements are included in the flux data, including C, Fe, He, N, O, and Si across 6 energies and from 2017 to Q1 of 2024
+Solar Energetic Particles (SEPs) are a significant phenomenon in space weather research, as they are not only capable of disrupting infrastructure on Earth, but also provide insights into solar phenomena through their ionic charge states. All flux data collected by the Solar Isotope Spectrometer aboard NASA's ACE orbiter, courtesy of the ACE Science Center at Caltech.
 
-Time-intensity profiles of SEPs:
-- These show how the flux of SEPs changes over time. The exponential decay is a characteristic pattern observed in  flux profiles.
-- Load info from SIS into dataframe (Fe, O, Si flux from 2017 to Q1 2024)
-- Compute statistics (mean, STD, determine cutoff for noise)
-- Examine the flux data for sudden, significant increases in particle flux (SEP events)
-- Zoom in on the periods after the initial peak, where the flux gradually decreases. These are the decay phases.
+Although the SIS instrument does not measure charge states directly, mean states can be inferred using a technique pioneered by Sollitt et al. (2008), given extended time periods of well-behaved, exponential decay profiles in particle flux.
 
-### 2. Identifying Decays:
-Analysis and identification of decay phases is done in solardecay.ipynb. The code identifies periods of exponential decay in a given time series of flux data.
+This repository contains code and data for analyzing solar energetic particles (SEPs) to identify decay phases and general SEP events. The project involves processing flux data of various elements, identifying significant events, and visualizing the results.
 
-A sliding window approach is used, where a fixed-size window (specified by `window_size`) is moved across the y-axis log scaled flux data. For each position of the window, linear regression is performed on the data within the window. 
+## Repository Structure
 
-The regression line's slope is computed, and if this slope is less than a predefined threshold (`slope_threshold`), it indicates a significant downward trend, characteristic of an exponential decay. The start and end times of the window are recorded as a decay segment if the slope condition is met.
+- **flux**: Contains raw flux data files from 2017-2024 
+- **flux_1998**: Contains flux data from 1998-2014 
+- **flux_2014**: Contains flux data from 2014-2024
+- **mlp_model**: Trained MLP models for decay event classification
 
-After identifying all potential decay segments, it proceeds to merge overlapping or adjacent segments. This step ensures that a continuous decay period is not fragmented into multiple segments. 
+- **old_analyses**: Archive of previous analyses, not used anymore.
+  - **data**: Raw flux data for Fe and O with ratios. Used for early visualization, not used anymore.
+  - **graphing**: Old scripts for graphing and visualizing flux data, not used anymore.
+  - **out_grid**: Old Output files from grid-based analyses, not used anymore.
+  - **trim_txt**: Text files with trimming instructions used in old analyses, not used anymore.
+  - **Notebooks**:
+    - **decay_training.ipynb**: Initial test for training decay identification models.
+    - **solardecay.ipynb**: Initial test for analyzing and identifying decay phases in SEP data.
+    - **solarflare.ipynb**: Initial test for identifying general SEP events.
 
-All the decay phase start/stop times are loaded into a Pandas dataframe, and a plotting function plots all of them on a grid.
+- **out_csv**: Output CSV files from the old analyses, not used anymore.
 
+- **transformed_data**: Transformed data files used in the current analyses.
+  - **decay_input_features_2014.csv**: Transformed features for input to ML training. Features are calculated from 57 total events extracted from 2014-2024
+  - **decay_test_features_1998.csv**: Transformed test features for input to ML analysis. Features are calculated from 113 total events extracted from 1998-2014
+  - **decay_test_predictions.csv**: Features from 1998-2014 analysis with an added column with predicted labels made by the ML model.
+  - **filtered_decay_events.csv**: Filtered list of 27 decay events with more than 4 elements decaying from 2014-2024
+  - **uncleaned_decay_events_14.csv**: Unfiltered list of 186 decay events from 2014-2024
 
-### 2. Identifying General SEP Events:
-Analysis and identification of general SEP events is done in solarflare.ipynb. The code identifies all SEP events based on certain criteria.
+## Scripts
 
-First, the first quartile (Q1) values for each element are precomputed, excluding invalid data points (-999.9 and 0). Multipliers are applied to the elements Helium (He) and Oxygen (O) to account for their abundance. This marks the lower threshold for SEP events.
+- **decay_identification.py**: Scripts for identifying decay phases in SEP data.
+- **features.py**: Scripts for extracting features from SEP data.
+- **graph.py**: Scripts for graphing and visualizing SEP data.
+- **load.py**: Scripts for loading SEP data into data structures for analysis.
 
-Next, a `identify_events` detects significant flux events using a smoothed version of the flux data. Slopes are calculated using a specified window size to identify upward trends, which mark the beginning of an event. 
+## Jupyter Notebooks
 
-Events are defined by periods where the flux exceeds the Q1 threshold and maintains an upward trend towards a peak. Events are cut off when the flux level decays to a level similar to the flux at the start of the event, following the peak.
+- **test_mlp_2014.ipynb**: Notebook for testing the trained MLP model with 1998-2014 data.
+- **train_data_2014.ipynb**: Notebook for analyzing, preparing, and extracting training data from 2014-2024, used to train MLP in `train_mlp_2014.ipynb`.
+- **train_mlp_2014.ipynb**: Notebook for training the MLP model with 2014-2024 data.
 
-All the event start/stop times are loaded into a Pandas dataframe, and a plotting function plots all of them on a grid, with each element being separated and color coded.
+## HTML
 
+- **web_plot.html**: HTML file for web-based plotting of SEP data with general event detection start/stop flags.
 
+<!-- ## Dataset
+
+### High Priority Elements
+
+- **Fe (Iron)**: Key element in SEP analysis due to a wide range of charge states and significant correlation with the Fe/O ratio.
+- **O (Oxygen)**: Abundant element serving as a reference point when analyzing charge state ratios.
+- **Si (Silicon)**: Exhibits a range of charge states, though less abundant than Fe or O.
+
+The dataset includes flux data for six elements: Carbon (C), Iron (Fe), Helium (He), Nitrogen (N), Oxygen (O), and Silicon (Si) across six energies from 2017 to Q1 2024.
+
+### Time-Intensity Profiles of SEPs
+
+- Show how the flux of SEPs changes over time.
+- Exponential decay is a characteristic pattern observed in flux profiles.
+
+Steps:
+
+1. Load data from SIS into a dataframe (Fe, O, Si flux from 2017 to Q1 2024).
+2. Compute statistics (mean, standard deviation, determine cutoff for noise).
+3. Examine flux data for sudden, significant increases in particle flux (SEP events).
+4. Zoom in on periods after the initial peak, where the flux gradually decreases (decay phases).
+
+## Analysis and Identification
+
+### Identifying Decays
+
+Conducted in `solardecay.ipynb`. The code identifies periods of exponential decay in the time series of flux data using a sliding window approach.
+
+- Linear regression is performed within a fixed-size window.
+- The slope of the regression line indicates a significant downward trend (exponential decay) if below a threshold.
+- Decay segments are merged to ensure continuous decay periods are not fragmented.
+- Results are loaded into a Pandas dataframe and plotted.
+
+### Identifying General SEP Events
+
+Conducted in `solarflare.ipynb`. The code identifies SEP events based on predefined criteria.
+
+- Precompute first quartile (Q1) values for each element, excluding invalid data points.
+- Apply multipliers to He and O to account for abundance.
+- `identify_events` detects significant flux events using smoothed flux data and slope calculations.
+- Events are defined by periods exceeding the Q1 threshold and maintaining upward trends toward a peak.
+- Results are loaded into a Pandas dataframe and plotted.
+ -->

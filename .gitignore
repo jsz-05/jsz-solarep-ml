@@ -2,3 +2,9 @@ mlp_decay_97.joblib
 scaler.joblib
 *.pyc
 __pycache__
+
+train_mlp_2014 copy.ipynb
+README copy.md
+input_features_stored_14.csv
+input_features_stored.csv
+train_rnn_2014.ipynb
