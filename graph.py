@@ -171,3 +171,99 @@ def plot_decay_events_per_element(decay_events_df, data_3d, datetime_values, ele
         fig.suptitle(f"Decay Event {event_number} ({start_time.year})", fontsize=16)
         plt.tight_layout()
         plt.show()
+
+
+
+
+
+import plotly.graph_objects as go
+import pandas as pd
+from plotly.subplots import make_subplots
+
+def create_interactive_plot_with_events(data_3d, datetime_values, element_mapping, energy_level, start_time, end_time, output_html, decay_events_df):
+    """
+    Creates an interactive Plotly plot of flux data with start (green) and stop (red) lines for events 
+    from the provided decay_events_df DataFrame.
+    
+    Args:
+        data_3d (numpy.ndarray): The 3D data cube (energy, time, element).
+        datetime_values (numpy.ndarray): Array of datetime objects.
+        element_mapping (dict): Element name to array index mapping.
+        energy_level (int): The energy level to analyze.
+        start_time (pd.Timestamp): Start time for the plot range.
+        end_time (pd.Timestamp): End time for the plot range.
+        output_html (str): Path to the output HTML file.
+        decay_events_df (pd.DataFrame): DataFrame containing decay events with columns 'Start Year', 'End Year', 
+                                        'Start Fractional Day', 'End Fractional Day', 'Start Hour', 'End Hour'.
+    """
+    # Time mask
+    time_mask = (datetime_values >= start_time) & (datetime_values <= end_time)
+    
+    # Helium flux
+    helium_index = element_mapping['He']
+    helium_flux = data_3d[energy_level - 1, time_mask, helium_index]
+    
+    # Omit bad data points
+    valid_data_mask = helium_flux != -999.9
+    helium_flux = helium_flux[valid_data_mask]
+    helium_time = datetime_values[time_mask][valid_data_mask]
+
+    if len(helium_flux) == 0:
+        print("No valid helium data in the specified time range.")
+        return
+
+    # Create the Plotly figure
+    fig = make_subplots(rows=1, cols=1)
+
+    # Plot the helium flux data
+    fig.add_trace(go.Scatter(x=helium_time, y=helium_flux, mode='lines', name='Helium Flux', line=dict(color='blue')))
+    
+    # Plot the start and stop lines for decay events from decay_events_df
+    for _, row in decay_events_df.iterrows():
+        start_year = int(row['Start Year'])
+        end_year = int(row['End Year'])
+        start_frac_day = row['Start Fractional Day']
+        end_frac_day = row['End Fractional Day']
+        start_hour = row['Start Hour']
+        end_hour = row['End Hour']
+        
+        # Convert fractional days and hours to datetime
+        start_datetime = pd.to_datetime(f'{start_year}-01-01') + pd.to_timedelta(start_frac_day - 1, unit='D') + pd.to_timedelta(start_hour, unit='h')
+        end_datetime = pd.to_datetime(f'{end_year}-01-01') + pd.to_timedelta(end_frac_day - 1, unit='D') + pd.to_timedelta(end_hour, unit='h')
+        
+        fig.add_trace(go.Scatter(x=[start_datetime, start_datetime], y=[min(helium_flux), max(helium_flux)], 
+                                 mode='lines', name='Decay Start', line=dict(color='green', dash='dash'), showlegend=False))
+        fig.add_trace(go.Scatter(x=[end_datetime, end_datetime], y=[min(helium_flux), max(helium_flux)], 
+                                 mode='lines', name='Decay End', line=dict(color='red', dash='dash'), showlegend=False))
+    
+    # Plot other elements
+    for element_name, element_index in element_mapping.items():
+        if element_name == 'He':
+            continue
+        
+        element_flux = data_3d[energy_level - 1, time_mask, element_index]
+        valid_data_mask = element_flux != -999.9
+        element_flux = element_flux[valid_data_mask]
+        element_time = datetime_values[time_mask][valid_data_mask]
+
+        if len(element_flux) == 0:
+            continue
+        
+        fig.add_trace(go.Scatter(x=element_time, y=element_flux, mode='lines', name=f'{element_name} Flux'))
+
+    # Update layout for better visibility and horizontal scrolling
+    fig.update_layout(
+        title=f'Flux Data with Decay Events (Energy Level {energy_level})',
+        xaxis_title='Time',
+        yaxis_title='Flux (particles/(cm² Sr sec MeV/nucleon))',
+        yaxis_type='log',  # Set y-axis to log scale
+        xaxis=dict(rangeslider=dict(visible=True)),
+        autosize=False,
+        width=1500,
+        height=600,
+        margin=dict(l=50, r=50, b=50, t=50, pad=4)
+    )
+
+    # Save and show the plot
+    fig.write_html(output_html)
+    fig.show()
