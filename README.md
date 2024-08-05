@@ -44,7 +44,8 @@ This repository contains code and data for analyzing solar energetic particles (
 
 - **test_mlp_2014.ipynb**: Notebook for testing the trained MLP model with 1998-2014 data.
 - **train_data_2014.ipynb**: Notebook for analyzing, preparing, and extracting training data from 2014-2024, used to train MLP in `train_mlp_2014.ipynb`.
-- **train_mlp_2014.ipynb**: Notebook for training the MLP model with 2014-2024 data.
+- **train_mlp_2014.ipynb**: Notebook for training the MLP model with 2014-2024 data. 
+- **train_randomforest_2014.ipynb**: Notebook for training the Random Forest classifier with 2014-2024 data.
 
 ## HTML
 
