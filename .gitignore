@@ -3,7 +3,7 @@ scaler.joblib
 *.pyc
 __pycache__
 
-train_mlp_2014 copy.ipynb
+train_mlp_2014_save.ipynb
 README copy.md
 input_features_stored_14.csv
 input_features_stored.csv
