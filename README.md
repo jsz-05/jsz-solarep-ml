@@ -9,9 +9,11 @@ This research will be presented at the American Geophysical Union Conference, he
 
 Solar Energetic Particles (SEPs) are a significant phenomenon in space weather research, as they are not only capable of disrupting infrastructure on Earth, but also provide insights into solar phenomena through their ionic charge states. All flux data collected by the Solar Isotope Spectrometer aboard NASA's ACE orbiter, courtesy of the ACE Science Center at Caltech.
 
-Although the SIS instrument does not measure charge states directly, mean states can be inferred using a technique pioneered by Sollitt et al. (2008), given extended time periods of well-behaved, exponential decay profiles in particle flux.
+Although instruments like NASA’s Solar Isotope Spectrometer (SIS) aboard the Advanced Composition Explorer (ACE) do not directly measure ionic charge states, these states can be inferred if an energy-dependence exists within the time decay constants of SEP event profiles. These profiles can also yield info on the types of particle accelerations present. (Sollitt et al. (2008)).
 
-This repository contains code and data for analyzing solar energetic particles (SEPs) to identify decay phases and general SEP events. The project involves processing flux data of various elements, identifying significant events, and visualizing the results.
+Current methods for extracting decay profiles for charge state inference involve manual and semi-automated algorithms that are time-consuming and prone to implicit bias. To solve this, we leverage machine learning techniques, specifically Multilayer Perceptrons (MLP) combined with time-series analysis methods, as well as time-series imaging techniques, such as DMDT or Gramian Angular Fields, for use with training Convolutional Neural Networks (CNNs) for classification.
+
+This repository contains code and data for this project.
 
 ## Repository Structure
 
