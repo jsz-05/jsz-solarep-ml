@@ -1,6 +1,12 @@
 
 # Solar Energetic Particles (SEP) Analysis
 
+This repository contains code and data for analyzing solar energetic particles (SEPs) using novel machine learning approaches. The project involves processing flux data of various elements, identifying significant events, and visualizing the results.
+
+This research will be presented at the American Geophysical Union Conference, held in Washington, D.C., from December 9–13, 2024. For more details, please refer to the [AGU24 program](https://agu.confex.com/agu/agu24/meetingapp.cgi/Paper/1696330).
+
+---
+
 Solar Energetic Particles (SEPs) are a significant phenomenon in space weather research, as they are not only capable of disrupting infrastructure on Earth, but also provide insights into solar phenomena through their ionic charge states. All flux data collected by the Solar Isotope Spectrometer aboard NASA's ACE orbiter, courtesy of the ACE Science Center at Caltech.
 
 Although the SIS instrument does not measure charge states directly, mean states can be inferred using a technique pioneered by Sollitt et al. (2008), given extended time periods of well-behaved, exponential decay profiles in particle flux.
@@ -12,7 +18,7 @@ This repository contains code and data for analyzing solar energetic particles (
 - **flux**: Contains raw flux data files from 2017-2024 
 - **flux_1998**: Contains flux data from 1998-2014 
 - **flux_2014**: Contains flux data from 2014-2024
-- **mlp_model**: Trained MLP models for decay event classification
+- **mlp_model**: Location to store trained MLP models for decay event classification
 
 - **old_analyses**: Archive of previous analyses, not used anymore.
   - **data**: Raw flux data for Fe and O with ratios. Used for early visualization, not used anymore.
@@ -26,6 +32,9 @@ This repository contains code and data for analyzing solar energetic particles (
 
 - **out_csv**: Output CSV files from the old analyses, not used anymore.
 
+- **randomforest_model**: Location to store trained Random Forest models for decay event classification
+
+
 - **transformed_data**: Transformed data files used in the current analyses.
   - **decay_input_features_2014.csv**: Transformed features for input to ML training. Features are calculated from 57 total events extracted from 2014-2024
   - **decay_test_features_1998.csv**: Transformed test features for input to ML analysis. Features are calculated from 113 total events extracted from 1998-2014
@@ -35,14 +44,18 @@ This repository contains code and data for analyzing solar energetic particles (
 
 ## Scripts
 
-- **decay_identification.py**: Scripts for identifying decay phases in SEP data.
 - **features.py**: Scripts for extracting features from SEP data.
 - **graph.py**: Scripts for graphing and visualizing SEP data.
+- **identification.py**: Scripts for identifying decay phases in SEP data.
 - **load.py**: Scripts for loading SEP data into data structures for analysis.
 
 ## Jupyter Notebooks
 
-- **test_mlp_2014.ipynb**: Notebook for testing the trained MLP model with 1998-2014 data.
+
+- **decay_identification.ipynb**: Notebook for classifying different types of decays (Exponential, Power-Law, Irregular)
+
+- **test_mlp_1998-2014.ipynb**: Notebook for testing the trained MLP model with 1998-2014 data.
+- **test_randomforest_1998-2014.ipynb**: Notebook for testing the trained MLP model with 1998-2014 data.
 - **train_data_2014.ipynb**: Notebook for analyzing, preparing, and extracting training data from 2014-2024, used to train MLP in `train_mlp_2014.ipynb`.
 - **train_mlp_2014.ipynb**: Notebook for training the MLP model with 2014-2024 data. 
 - **train_randomforest_2014.ipynb**: Notebook for training the Random Forest classifier with 2014-2024 data.
